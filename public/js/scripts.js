@@ -15,27 +15,18 @@ async function loadAPI() {
             <div class="list-group">`;
 
 		endpoints[category].forEach((endpoint) => {
+			const formId = `form-${category}-${endpoint.path.replace(/\//g, "-")}`;
 			html += `
         <div class="list-group-item list-group-item-action my-3 rounded-3 bg-dark text-white shadow-lg">
             <h5 class="mb-3 text-primary"><strong>${endpoint.path}</strong></h5>
             <div class="d-flex justify-content-between align-items-center">
-                <code class="bg-secondary text-light p-2 rounded">${
-					endpoint.method
-				} ${endpoint.path}</code>
-                <button class="btn btn-outline-info btn-sm" data-bs-toggle="collapse" href="#form-${category}-${endpoint.path.replace(
-					/\//g,
-					"-",
-				)}">Try It</button>
+                <code class="bg-secondary text-light p-2 rounded">${endpoint.method} ${endpoint.path}</code>
+                <button class="btn btn-outline-info btn-sm" data-bs-toggle="collapse" href="#${formId}">Try It</button>
             </div>
-            <div id="form-${category}-${endpoint.path.replace(
-				/\//g,
-				"-",
-			)}" class="collapse mt-3">
-                <form class="mt-2">
+            <div id="${formId}" class="collapse mt-3">
+                <form class="mt-2" data-method="${endpoint.method}" data-path="${endpoint.path}" data-category="${category}">
                     ${generateFormFields(category, endpoint.path)}
-                    <button type="button" class="btn btn-success mt-2 w-100 rounded-3" onclick="tryAPI('${
-						endpoint.method
-					}', '${endpoint.path}', this, '${category}')">
+                    <button type="button" class="btn btn-success mt-2 w-100 rounded-3 try-api-btn">
                         <span class="spinner-border spinner-border-sm" style="display: none;"></span> Try API
                     </button>
                 </form>
@@ -46,7 +37,19 @@ async function loadAPI() {
 		html += `</div></div></div></div>`;
 		docsAccordion.innerHTML += html;
 	});
+
+	// Add event listeners to all "Try API" buttons
+	document.querySelectorAll(".try-api-btn").forEach((button) => {
+		button.addEventListener("click", function () {
+			const form = this.closest("form");
+			const method = form.getAttribute("data-method");
+			const path = form.getAttribute("data-path");
+			const category = form.getAttribute("data-category");
+			tryAPI(method, path, this, category);
+		});
+	});
 }
+
 // Fungsi untuk menghasilkan form input untuk endpoint yang membutuhkan parameter
 function generateFormFields(category, path) {
 	let fields = "";
@@ -179,7 +182,5 @@ function downloadResponse() {
 	link.download = "response.json";
 	link.click();
 }
-
-document.body.style.fontFamily = '"IBM Plex Mono", monospace';
 
 loadAPI();

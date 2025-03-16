@@ -5,6 +5,7 @@ const os = require("os");
 const rateLimit = require("express-rate-limit");
 const cache = require("memory-cache");
 const { trackRequests, getServerStatus, setDatabaseStatus } = require("./stats");
+const crypto = require('crypto');
 
 const app = express();
 const port = 4000;
@@ -42,7 +43,9 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use((req, res, next) => {
-	res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; script-src 'self' https://cdn.jsdelivr.net");
+	const nonce = crypto.randomBytes(16).toString('base64');
+	res.locals.nonce = nonce;
+	res.setHeader("Content-Security-Policy", `default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; script-src 'self' https://cdn.jsdelivr.net 'nonce-${nonce}'`);
 	res.setHeader("Content-Type", "text/html; charset=UTF-8");
 	res.setHeader("Content-Style-Type", "text/css");
 	res.setHeader("Content-Script-Type", "text/javascript");
@@ -269,7 +272,7 @@ app.get("/api/info", (req, res) => {
 // Simulasi Database (contoh MongoDB)
 setTimeout(() => {
   setDatabaseStatus("Connected");
-}, 5000); // Simulasi koneksi database setelah 5 detik
+}, 1000); // Simulasi koneksi database setelah 5 detik
 
 // Endpoint untuk halaman dokumentasi API
 app.get("/docs", (req, res) => {
