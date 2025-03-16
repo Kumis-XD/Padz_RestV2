@@ -1,10 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📌 API Documentation</title>
+    <title>📌 API Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
     <style>
       body {
@@ -34,26 +35,15 @@
   <body class="flex flex-col items-center min-h-screen py-10">
     <!-- Header -->
     <header class="text-center">
-      <h1 class="text-4xl font-bold">📌 API Documentation</h1>
-      <p class="text-lg mt-3">API untuk mengakses layanan Download, Search, Maker, dll.</p>
-      <div class="mt-4">
-        <a href="/docs" class="btn">📜 Lihat Dokumentasi</a>
-      </div>
+      <h1 class="text-4xl font-bold">📌 API Dashboard</h1>
+      <p class="text-lg mt-3">Pantau kesehatan dan performa API Anda</p>
     </header>
-
-    <!-- Deskripsi API -->
-    <section id="about" class="container mt-8 max-w-3xl mx-auto text-center">
-      <div class="card">
-        <h2 class="text-2xl font-semibold">🔹 Apa itu API ini?</h2>
-        <p class="mt-2">API ini menyediakan layanan untuk mengunduh data, melakukan pencarian, dan membuat konten melalui berbagai endpoint.</p>
-      </div>
-    </section>
 
     <!-- Status API -->
     <section id="status" class="container mt-8 max-w-3xl mx-auto">
       <div class="card">
         <h2 class="text-2xl font-semibold">📊 Status API</h2>
-        <p class="mt-2">Informasi real-time tentang performa API.</p>
+        <p class="mt-2">Data real-time tentang performa API.</p>
 
         <div class="mt-4 space-y-2">
           <p><strong>Total Requests:</strong> <span id="totalRequests">-</span></p>
@@ -69,18 +59,33 @@
       </div>
     </section>
 
+    <!-- Grafik Statistik API -->
+    <section class="container mt-8 max-w-4xl mx-auto">
+      <div class="card">
+        <h2 class="text-2xl font-semibold">📈 Grafik Statistik</h2>
+        <canvas id="requestsChart" class="mt-4"></canvas>
+        <canvas id="cpuChart" class="mt-4"></canvas>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="text-center mt-8">
       <p class="text-sm">&copy; 2025 API Monitoring. Semua Hak Dilindungi.</p>
     </footer>
 
-    <!-- Fetch API Status -->
+    <!-- JavaScript untuk Fetch Data API dan Chart.js -->
     <script>
+      let requestsChart, cpuChart;
+      let timestamps = [];
+      let totalRequestsData = [];
+      let cpuLoadData = [];
+
       async function fetchAPIStatus() {
         try {
-          const response = await fetch('/api/status');
+          const response = await fetch("/api/status");
           const data = await response.json();
 
+          // Perbarui data teks
           document.getElementById("totalRequests").innerText = data.totalRequests;
           document.getElementById("requestsPerSecond").innerText = data.requestsPerSecond;
           document.getElementById("uptime").innerText = data.server.uptime;
@@ -88,13 +93,85 @@
           document.getElementById("totalMemory").innerText = data.server.totalMemory;
           document.getElementById("freeMemory").innerText = data.server.freeMemory;
           document.getElementById("databaseStatus").innerText = data.database.status;
+
+          // Tambahkan data ke array untuk grafik
+          const now = new Date().toLocaleTimeString();
+          timestamps.push(now);
+          totalRequestsData.push(data.totalRequests);
+          cpuLoadData.push(data.server.cpuLoad["1m"]);
+
+          // Batasi data hanya 10 terakhir
+          if (timestamps.length > 10) {
+            timestamps.shift();
+            totalRequestsData.shift();
+            cpuLoadData.shift();
+          }
+
+          updateCharts();
         } catch (error) {
           console.error("Gagal mengambil data:", error);
         }
       }
 
-      // Jalankan saat halaman dimuat
+      function createCharts() {
+        const ctx1 = document.getElementById("requestsChart").getContext("2d");
+        const ctx2 = document.getElementById("cpuChart").getContext("2d");
+
+        requestsChart = new Chart(ctx1, {
+          type: "line",
+          data: {
+            labels: timestamps,
+            datasets: [
+              {
+                label: "Total Requests",
+                data: totalRequestsData,
+                borderColor: "#5a9c6e",
+                backgroundColor: "rgba(90, 156, 110, 0.2)",
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: { x: { beginAtZero: true }, y: { beginAtZero: true } },
+          },
+        });
+
+        cpuChart = new Chart(ctx2, {
+          type: "line",
+          data: {
+            labels: timestamps,
+            datasets: [
+              {
+                label: "CPU Load (1m)",
+                data: cpuLoadData,
+                borderColor: "#ffb74d",
+                backgroundColor: "rgba(255, 183, 77, 0.2)",
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: { x: { beginAtZero: true }, y: { beginAtZero: true } },
+          },
+        });
+      }
+
+      function updateCharts() {
+        requestsChart.data.labels = timestamps;
+        requestsChart.data.datasets[0].data = totalRequestsData;
+        requestsChart.update();
+
+        cpuChart.data.labels = timestamps;
+        cpuChart.data.datasets[0].data = cpuLoadData;
+        cpuChart.update();
+      }
+
+      // Inisialisasi grafik dan mulai polling API setiap 5 detik
+      createCharts();
       fetchAPIStatus();
+      setInterval(fetchAPIStatus, 5000);
     </script>
   </body>
 </html>
