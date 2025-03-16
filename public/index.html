@@ -1,141 +1,90 @@
 <!doctype html>
 <html lang="id">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📌 API Status & Informasi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <title>📌 API Status</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
     <style>
-        body {
-            background-color: #3c3f41;
-            color: #d7dadc;
-            font-family: 'Press Start 2P', cursive;
-        }
-
-        header {
-            background-color: #4a7c56;
-            padding: 4rem 0;
-            color: #fff;
-            border-bottom: 2px solid #5a9c6e;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .info-box {
-            background-color: #282a2e;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .loading {
-            color: #aaa;
-            font-style: italic;
-        }
-
-        footer {
-            background-color: #4a7c56;
-            padding: 1rem 0;
-            color: #d7dadc;
-            border-top: 2px solid #5a9c6e;
-            font-size: 1rem;
-        }
+      body {
+        background-color: #282c34;
+        color: #d7dadc;
+        font-family: "IBM Plex Mono", monospace;
+      }
+      .card {
+        background-color: #3c3f41;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      .btn-refresh {
+        background-color: #5a9c6e;
+        padding: 10px 16px;
+        border-radius: 4px;
+        transition: 0.3s;
+      }
+      .btn-refresh:hover {
+        background-color: #4a7c56;
+        transform: scale(1.05);
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
-    <!-- Header Section -->
+  <body class="flex flex-col items-center min-h-screen py-10">
+    <!-- Header -->
     <header class="text-center">
-        <h1>📌 Status & Informasi API</h1>
-        <p class="lead mt-3">Monitor performa server & status API secara real-time</p>
+      <h1 class="text-4xl font-bold">📌 API Status</h1>
+      <p class="text-lg mt-3">Pantau kesehatan dan performa API Anda</p>
     </header>
 
     <!-- Status API -->
-    <section id="status" class="container py-5 text-center">
-        <h2>📌 Informasi API</h2>
-        <div class="info-box">
-            <p><b>Nama API:</b> <span id="api-name" class="loading">Memuat...</span></p>
-            <p><b>Versi:</b> <span id="api-version" class="loading">Memuat...</span></p>
-            <p><b>Uptime:</b> <span id="api-uptime" class="loading">Memuat...</span></p>
-            <p><b>Total Endpoint:</b> <span id="api-endpoints" class="loading">Memuat...</span></p>
-            <p><b>Hostname:</b> <span id="server-hostname" class="loading">Memuat...</span></p>
-            <p><b>Port:</b> <span id="server-port" class="loading">Memuat...</span></p>
-            <p><b>Waktu Server:</b> <span id="server-time" class="loading">Memuat...</span></p>
+    <div class="container mt-8 max-w-3xl mx-auto">
+      <div class="card">
+        <h2 class="text-2xl font-semibold">🔹 Statistik API</h2>
+        <p class="mt-2">Informasi real-time tentang penggunaan API.</p>
+
+        <div class="mt-4 space-y-2">
+          <p><strong>Total Requests:</strong> <span id="totalRequests">-</span></p>
+          <p><strong>Requests per Second:</strong> <span id="requestsPerSecond">-</span></p>
+          <p><strong>Uptime:</strong> <span id="uptime">-</span></p>
+          <p><strong>CPU Load:</strong> <span id="cpuLoad">-</span></p>
+          <p><strong>Total Memory:</strong> <span id="totalMemory">-</span></p>
+          <p><strong>Free Memory:</strong> <span id="freeMemory">-</span></p>
+          <p><strong>Database Status:</strong> <span id="databaseStatus">-</span></p>
         </div>
 
-        <h2 class="mt-5">📊 Status Server</h2>
-        <div class="info-box">
-            <p><b>CPU Load:</b> 
-                <span id="cpu-load-1m" class="loading">Memuat...</span> (1 min) | 
-                <span id="cpu-load-5m" class="loading">Memuat...</span> (5 min) | 
-                <span id="cpu-load-15m" class="loading">Memuat...</span> (15 min)
-            </p>
-            <p><b>Total RAM:</b> <span id="total-ram" class="loading">Memuat...</span></p>
-            <p><b>RAM Tersisa:</b> <span id="free-ram" class="loading">Memuat...</span></p>
-            <p><b>Disk Usage:</b> <span id="disk-usage" class="loading">Memuat...</span></p>
-        </div>
-
-        <h2 class="mt-5">📡 Statistik API</h2>
-        <div class="info-box">
-            <p><b>Jumlah Request:</b> <span id="total-requests" class="loading">Memuat...</span></p>
-            <p><b>Request per Detik:</b> <span id="req-per-sec" class="loading">Memuat...</span></p>
-            <p><b>Status Database:</b> <span id="db-status" class="loading">Memuat...</span></p>
-        </div>
-    </section>
+        <!-- Tombol Refresh -->
+        <button onclick="fetchAPIStatus()" class="btn-refresh mt-4">🔄 Refresh</button>
+      </div>
+    </div>
 
     <!-- Footer -->
-    <footer class="text-center">
-        <p>&copy; 2025 API Documentation. Semua Hak Dilindungi.</p>
+    <footer class="text-center mt-8">
+      <p class="text-sm">&copy; 2025 API Monitoring. Semua Hak Dilindungi.</p>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-
-    <!-- Fetch API Info & Status -->
+    <!-- JavaScript untuk Fetch Data API -->
     <script>
-        async function fetchAPIInfo() {
-            try {
-                const [infoRes, statusRes] = await Promise.all([
-                    fetch("/api/info"),
-                    fetch("/api/status")
-                ]);
+      async function fetchAPIStatus() {
+        try {
+          const response = await fetch('/api/status');
+          const data = await response.json();
 
-                const infoData = await infoRes.json();
-                const statusData = await statusRes.json();
-
-                // API Info
-                document.getElementById("api-name").textContent = infoData.server.name;
-                document.getElementById("api-version").textContent = infoData.server.version;
-                document.getElementById("api-uptime").textContent = infoData.server.uptime;
-                document.getElementById("api-endpoints").textContent = infoData.server.totalEndpoints;
-                document.getElementById("server-hostname").textContent = infoData.server.hostname;
-                document.getElementById("server-port").textContent = infoData.server.port;
-                document.getElementById("server-time").textContent = new Date(infoData.server.time).toLocaleString();
-
-                // Server Status
-                document.getElementById("cpu-load-1m").textContent = statusData.server.cpuLoad["1m"];
-                document.getElementById("cpu-load-5m").textContent = statusData.server.cpuLoad["5m"];
-                document.getElementById("cpu-load-15m").textContent = statusData.server.cpuLoad["15m"];
-                document.getElementById("total-ram").textContent = statusData.server.totalMemory;
-                document.getElementById("free-ram").textContent = statusData.server.freeMemory;
-                document.getElementById("disk-usage").textContent = statusData.server.diskUsage;
-
-                // API Statistics
-                document.getElementById("total-requests").textContent = statusData.api.totalRequests;
-                document.getElementById("req-per-sec").textContent = statusData.api.requestsPerSecond;
-                document.getElementById("db-status").textContent = statusData.database.status;
-
-            } catch (error) {
-                console.error("Gagal mengambil data API:", error);
-            }
+          document.getElementById("totalRequests").innerText = data.totalRequests;
+          document.getElementById("requestsPerSecond").innerText = data.requestsPerSecond;
+          document.getElementById("uptime").innerText = data.server.uptime;
+          document.getElementById("cpuLoad").innerText = `${data.server.cpuLoad["1m"]} (1m), ${data.server.cpuLoad["5m"]} (5m), ${data.server.cpuLoad["15m"]} (15m)`;
+          document.getElementById("totalMemory").innerText = data.server.totalMemory;
+          document.getElementById("freeMemory").innerText = data.server.freeMemory;
+          document.getElementById("databaseStatus").innerText = data.database.status;
+        } catch (error) {
+          console.error("Gagal mengambil data:", error);
         }
+      }
 
-        // Update setiap 10 detik
-        fetchAPIInfo();
-        setInterval(fetchAPIInfo, 10000);
+      // Ambil data saat pertama kali halaman dimuat
+      fetchAPIStatus();
     </script>
-
-</body>
+  </body>
 </html>
