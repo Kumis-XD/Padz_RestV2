@@ -66,6 +66,10 @@ function generateFormFields(category, path) {
 function getRequiredParams(category, path) {
 	if (category.toLowerCase() === "search") return ["query"];
 	if (category.toLowerCase() === "download") return ["url"];
+	if (category.toLowerCase() === "information")
+	  return ["tahun"];
+	if (category.toLowerCase() === "tools")
+	  return ["user"];
 	if (category.toLowerCase() === "maker") {
 		if (
 			path.toLowerCase().includes("bratimage") ||

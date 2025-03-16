@@ -20,6 +20,8 @@ let endpointStats = {
 	Download: {},
 	Maker: {},
 	Search: {},
+	Information: {},
+	Tools: {},
 };
 
 // Fungsi untuk memuat semua endpoint dari folder
@@ -50,6 +52,22 @@ const loadRoutes = (category) => {
 										status: false,
 										author: "Padz Dev",
 										error: `Parameter 'query' diperlukan untuk endpoint ${routeName}`,
+									});
+								}
+
+								if (category === "Information" && !req.query.tahun) {
+									return res.status(400).json({
+										status: false,
+										author: "Padz Dev",
+										error: `Parameter 'tahun' diperlukan untuk endpoint ${routeName}`,
+									});
+								}
+
+								if (category === "Tools" && !req.query.user) {
+									return res.status(400).json({
+										status: false,
+										author: "Padz Dev",
+										error: `Parameter 'username' diperlukan untuk endpoint ${routeName}`,
 									});
 								}
 
@@ -120,6 +138,10 @@ const loadRoutes = (category) => {
 								// Jika parameter valid, proses dan kirim hasil
 								const result = await routeModule(
 									req.query.url ||
+									req.query.tahun ||
+									req.query.package||
+									req.query.user ||
+									req.query.judul ||
 										req.query.query ||
 										req.query.text ||
 										req.query.code ||
@@ -150,7 +172,7 @@ const loadRoutes = (category) => {
 };
 
 // Muat kategori Download, Maker, dan Search
-["Download", "Maker", "Search"].forEach(loadRoutes);
+["Download", "Maker", "Search", "Information", "Tools"].forEach(loadRoutes);
 
 // Endpoint JSON untuk daftar endpoint
 app.get("/api/docs", (req, res) => {
@@ -158,6 +180,8 @@ app.get("/api/docs", (req, res) => {
 		Download: [],
 		Maker: [],
 		Search: [],
+		Information: [],
+		Tools: [],
 	};
 
 	app._router.stack.forEach((middleware) => {
@@ -176,6 +200,10 @@ app.get("/api/docs", (req, res) => {
 				docs.Maker.push({ method, path: path.replace(/^\/api/, "") });
 			if (path.startsWith("/api/search/"))
 				docs.Search.push({ method, path: path.replace(/^\/api/, "") });
+			if (path.startsWith("/api/information/"))
+				docs.Information.push({ method, path: path.replace(/^\/api/, "") });
+			if (path.startsWith("/api/tools/"))
+				docs.Tools.push({ method, path: path.replace(/^\/api/, "") });
 		}
 	});
 
