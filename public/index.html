@@ -35,8 +35,11 @@
   <body class="flex flex-col items-center min-h-screen py-10">
     <!-- Header -->
     <header class="text-center">
-      <h1 class="text-4xl font-bold">📌 API Dashboard</h1>
-      <p class="text-lg mt-3">Pantau kesehatan dan performa API Anda</p>
+      <h1 class="text-4xl font-bold">📌 API Documentation</h1>
+      <p class="text-lg mt-3">API untuk mengakses layanan Download, Search, Maker, dll.</p>
+      <div class="mt-4">
+        <a href="/docs" class="btn">📜 Lihat Dokumentasi</a>
+      </div>
     </header>
 
     <!-- Status API -->
@@ -80,37 +83,47 @@
       let totalRequestsData = [];
       let cpuLoadData = [];
 
-      async function fetchAPIStatus() {
-        try {
-          const response = await fetch("/api/status");
-          const data = await response.json();
+      function fetchAPIStatus() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/api/status", true);
 
-          // Perbarui data teks
-          document.getElementById("totalRequests").innerText = data.totalRequests;
-          document.getElementById("requestsPerSecond").innerText = data.requestsPerSecond;
-          document.getElementById("uptime").innerText = data.server.uptime;
-          document.getElementById("cpuLoad").innerText = `${data.server.cpuLoad["1m"]} (1m), ${data.server.cpuLoad["5m"]} (5m), ${data.server.cpuLoad["15m"]} (15m)`;
-          document.getElementById("totalMemory").innerText = data.server.totalMemory;
-          document.getElementById("freeMemory").innerText = data.server.freeMemory;
-          document.getElementById("databaseStatus").innerText = data.database.status;
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
 
-          // Tambahkan data ke array untuk grafik
-          const now = new Date().toLocaleTimeString();
-          timestamps.push(now);
-          totalRequestsData.push(data.totalRequests);
-          cpuLoadData.push(data.server.cpuLoad["1m"]);
+            // Perbarui data teks
+            document.getElementById("totalRequests").innerText = data.totalRequests;
+            document.getElementById("requestsPerSecond").innerText = data.requestsPerSecond;
+            document.getElementById("uptime").innerText = data.server.uptime;
+            document.getElementById("cpuLoad").innerText = `${data.server.cpuLoad["1m"]} (1m), ${data.server.cpuLoad["5m"]} (5m), ${data.server.cpuLoad["15m"]} (15m)`;
+            document.getElementById("totalMemory").innerText = data.server.totalMemory;
+            document.getElementById("freeMemory").innerText = data.server.freeMemory;
+            document.getElementById("databaseStatus").innerText = data.database.status;
 
-          // Batasi data hanya 10 terakhir
-          if (timestamps.length > 10) {
-            timestamps.shift();
-            totalRequestsData.shift();
-            cpuLoadData.shift();
+            // Tambahkan data ke array untuk grafik
+            const now = new Date().toLocaleTimeString();
+            timestamps.push(now);
+            totalRequestsData.push(data.totalRequests);
+            cpuLoadData.push(data.server.cpuLoad["1m"]);
+
+            // Batasi data hanya 10 terakhir
+            if (timestamps.length > 10) {
+              timestamps.shift();
+              totalRequestsData.shift();
+              cpuLoadData.shift();
+            }
+
+            updateCharts();
+          } else {
+            console.error("Gagal mengambil data:", xhr.statusText);
           }
+        };
 
-          updateCharts();
-        } catch (error) {
-          console.error("Gagal mengambil data:", error);
-        }
+        xhr.onerror = function () {
+          console.error("Request gagal");
+        };
+
+        xhr.send();
       }
 
       function createCharts() {
@@ -171,7 +184,7 @@
       // Inisialisasi grafik dan mulai polling API setiap 5 detik
       createCharts();
       fetchAPIStatus();
-      setInterval(fetchAPIStatus, 5000);
+      setInterval(fetchAPIStatus, 5000);  // Polling data setiap 5 detik
     </script>
   </body>
 </html>
