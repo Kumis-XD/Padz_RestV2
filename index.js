@@ -37,9 +37,7 @@ const limiter = rateLimit({
 	max: 100, // Maksimum 100 request per menit per IP
 	message: "Terlalu banyak permintaan dari IP ini. Silakan coba lagi nanti.",
 	onLimitReached: (req, res) => {
-		const ip = req.ip;
-		// Catat IP yang melebihi limit
-		cache.put(ip, Date.now(), 5 * 60 * 1000); // Blokir IP selama 5 menit
+		// This callback is now deprecated, and it can be removed.
 	},
 });
 
@@ -276,7 +274,10 @@ const server = app.listen(port, () => {
 // Fungsi untuk mematikan dan menyalakan server setelah deteksi DDoS
 let serverDown = false;
 setInterval(() => {
-	const ddosDetected = Object.values(cache.getAll()).some((timestamp) => timestamp > Date.now() - 5 * 60 * 1000); // Cek apakah ada IP yang memicu batas rate
+	// Cek apakah ada IP yang memicu batas rate menggunakan cache
+	const ddosDetected = cache.keys().some((key) => {
+		return cache.get(key) > Date.now() - 5 * 60 * 1000; // Cek apakah IP aktif dalam 5 menit terakhir
+	});
 
 	if (ddosDetected && !serverDown) {
 		console.log("DDoS terdeteksi, mematikan server sementara...");
