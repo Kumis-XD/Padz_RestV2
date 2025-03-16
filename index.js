@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
+const { trackRequests, getServerStatus, setDatabaseStatus } = require("./stats");
 
 const app = express();
 const port = 4000;
@@ -216,57 +217,24 @@ app.get("/", (req, res) => {
 	res.sendFile(indexPath);
 });
 
-// Informasi dasar server
-const serverInfo = {
-	name: "Padz Dev API",
-	version: "1.0.0",
-	startedAt: new Date(),
-};
+app.use(trackRequests);
 
-// 📌 Endpoint informasi server
-app.get("/api/info", (req, res) => {
-	const uptimeSeconds = process.uptime();
-	const totalEndpoints = app._router.stack.filter((r) => r.route).length;
-
-	res.json({
-		status: true,
-		author: "Padz Dev",
-		server: {
-			name: serverInfo.name,
-			version: serverInfo.version,
-			uptime: `${Math.floor(uptimeSeconds / 60)}m ${Math.floor(uptimeSeconds % 60)}s`,
-			totalEndpoints,
-			startedAt: serverInfo.startedAt.toISOString(),
-		},
-	});
-});
-
-// 📌 Endpoint status server
+// Endpoint Statistik API
 app.get("/api/status", (req, res) => {
-	const memoryUsage = process.memoryUsage();
-	const cpuLoad = os.loadavg(); // Beban CPU dalam 1, 5, dan 15 menit terakhir
-
-	res.json({
-		status: true,
-		author: "Padz Dev",
-		server: {
-			uptime: `${Math.floor(process.uptime() / 60)}m ${Math.floor(process.uptime() % 60)}s`,
-			memory: {
-				rss: `${(memoryUsage.rss / 1024 / 1024).toFixed(2)} MB`,
-				heapTotal: `${(memoryUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`,
-				heapUsed: `${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`,
-			},
-			cpuLoad: {
-				"1m": cpuLoad[0].toFixed(2),
-				"5m": cpuLoad[1].toFixed(2),
-				"15m": cpuLoad[2].toFixed(2),
-			},
-			totalMemory: `${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`,
-			freeMemory: `${(os.freemem() / 1024 / 1024 / 1024).toFixed(2)} GB`,
-		},
-	});
+  res.json(getServerStatus());
 });
 
+// Endpoint Informasi API
+app.get("/api/info", (req, res) => {
+  res.json({
+    server: getServerStatus().server,
+  });
+});
+
+// Simulasi Database (contoh MongoDB)
+setTimeout(() => {
+  setDatabaseStatus("Connected");
+}, 5000); // Simulasi koneksi database setelah 5 detik
 // Endpoint untuk halaman dokumentasi API
 app.get("/docs", (req, res) => {
 	res.sendFile(docsPath);
