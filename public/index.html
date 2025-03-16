@@ -131,7 +131,7 @@
         const ctx2 = document.getElementById("cpuChart").getContext("2d");
 
         requestsChart = new Chart(ctx1, {
-          type: "line",
+          type: "bar",
           data: {
             labels: timestamps,
             datasets: [
@@ -151,7 +151,7 @@
         });
 
         cpuChart = new Chart(ctx2, {
-          type: "line",
+          type: "bar",
           data: {
             labels: timestamps,
             datasets: [
