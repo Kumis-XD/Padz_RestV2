@@ -41,6 +41,19 @@ const limiter = rateLimit({
 // Apply rate limiting ke semua request
 app.use(limiter);
 
+app.use((req, res, next) => {
+	res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; script-src 'self' https://cdn.jsdelivr.net");
+	res.setHeader("Content-Type", "text/html; charset=UTF-8");
+	res.setHeader("Content-Style-Type", "text/css");
+	res.setHeader("Content-Script-Type", "text/javascript");
+	res.setHeader("X-Content-Type-Options", "nosniff");
+	res.setHeader("X-Frame-Options", "DENY");
+	res.setHeader("X-XSS-Protection", "1; mode=block");
+	res.setHeader("Referrer-Policy", "no-referrer");
+	res.setHeader("Permissions-Policy", "geolocation=(self), microphone=()");
+	next();
+});
+
 // Fungsi untuk memuat semua endpoint dari folder
 const loadRoutes = (category) => {
 	const categoryPath = path.join(basePath, category);

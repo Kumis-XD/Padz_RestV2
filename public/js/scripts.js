@@ -180,4 +180,6 @@ function downloadResponse() {
 	link.click();
 }
 
+document.body.style.fontFamily = '"IBM Plex Mono", monospace';
+
 loadAPI();
