@@ -2,6 +2,8 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
+const rateLimit = require("express-rate-limit");
+const cache = require("memory-cache");
 const { trackRequests, getServerStatus, setDatabaseStatus } = require("./stats");
 
 const app = express();
@@ -28,6 +30,21 @@ let endpointStats = {
 
 // Variabel untuk total request global
 let totalRequests = 0;
+
+// Rate Limiting untuk melindungi server dari DDoS dan spam request
+const limiter = rateLimit({
+	windowMs: 1 * 60 * 1000, // 1 menit
+	max: 100, // Maksimum 100 request per menit per IP
+	message: "Terlalu banyak permintaan dari IP ini. Silakan coba lagi nanti.",
+	onLimitReached: (req, res) => {
+		const ip = req.ip;
+		// Catat IP yang melebihi limit
+		cache.put(ip, Date.now(), 5 * 60 * 1000); // Blokir IP selama 5 menit
+	},
+});
+
+// Apply rate limiting ke semua request
+app.use(limiter);
 
 // Fungsi untuk memuat semua endpoint dari folder
 const loadRoutes = (category) => {
@@ -252,18 +269,27 @@ app.get("/docs", (req, res) => {
 });
 
 // Menjalankan server
-app.listen(port, () => {
+const server = app.listen(port, () => {
 	console.log(`Server berjalan di http://localhost:${port}`);
 });
 
-// Reset statistik setiap 24 jam (opsional)
+// Fungsi untuk mematikan dan menyalakan server setelah deteksi DDoS
+let serverDown = false;
 setInterval(() => {
-	endpointStats = {
-		Download: {},
-		Maker: {},
-		Search: {},
-		Information: {},
-		Tools: {},
-	};
-	totalRequests = 0;
-}, 24 * 60 * 60 * 1000); // Reset setiap 24 jam
+	const ddosDetected = Object.values(cache.getAll()).some((timestamp) => timestamp > Date.now() - 5 * 60 * 1000); // Cek apakah ada IP yang memicu batas rate
+
+	if (ddosDetected && !serverDown) {
+		console.log("DDoS terdeteksi, mematikan server sementara...");
+		server.close(() => {
+			console.log("Server dimatikan. Menyalakan kembali...");
+			setTimeout(() => {
+				server.listen(port, () => {
+					console.log(`Server kembali berjalan di http://localhost:${port}`);
+				});
+			}, 30000); // Menunggu 30 detik sebelum menyalakan kembali
+		});
+		serverDown = true;
+	} else if (!ddosDetected && serverDown) {
+		serverDown = false;
+	}
+}, 5000);
