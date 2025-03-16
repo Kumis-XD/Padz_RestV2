@@ -15,7 +15,9 @@
     "cheerio": "^1.0.0",
     "cookie-parser": "^1.4.7",
     "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
     "fs": "^0.0.1-security",
+    "memory-cache": "^0.2.0",
     "node-fetch": "^3.3.2",
     "path": "^0.12.7",
     "yt-search": "^2.12.1"
