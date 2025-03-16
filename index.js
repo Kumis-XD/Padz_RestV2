@@ -240,11 +240,6 @@ app.get("/docs", (req, res) => {
 	res.sendFile(docsPath);
 });
 
-// Endpoint untuk mendapatkan statistik
-app.get("/api/stats", (req, res) => {
-	res.json(endpointStats);
-});
-
 // Menjalankan server
 app.listen(port, () => {
 	console.log(`Server berjalan di http://localhost:${port}`);
