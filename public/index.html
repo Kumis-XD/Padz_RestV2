@@ -82,6 +82,8 @@
       let timestamps = [];
       let totalRequestsData = [];
       let cpuLoadData = [];
+      let lastUpdateTime = Date.now();  // Menyimpan waktu pembaruan terakhir
+      let totalRequestsToday = 0;       // Total requests hari ini
 
       function fetchAPIStatus() {
         const xhr = new XMLHttpRequest();
@@ -91,8 +93,18 @@
           if (xhr.status === 200) {
             const data = JSON.parse(xhr.responseText);
 
+            // Cek apakah sudah 24 jam sejak pembaruan terakhir
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - lastUpdateTime;
+
+            // Jika lebih dari 24 jam, reset total requests
+            if (elapsedTime >= 86400000) {  // 86400000 ms = 24 jam
+              totalRequestsToday = 0;  // Reset total requests
+              lastUpdateTime = currentTime;  // Pembaruan waktu terakhir
+            }
+
             // Perbarui data teks
-            document.getElementById("totalRequests").innerText = data.totalRequests;
+            document.getElementById("totalRequests").innerText = totalRequestsToday;
             document.getElementById("requestsPerSecond").innerText = data.requestsPerSecond;
             document.getElementById("uptime").innerText = data.server.uptime;
             document.getElementById("cpuLoad").innerText = `${data.server.cpuLoad["1m"]} (1m), ${data.server.cpuLoad["5m"]} (5m), ${data.server.cpuLoad["15m"]} (15m)`;
@@ -100,10 +112,13 @@
             document.getElementById("freeMemory").innerText = data.server.freeMemory;
             document.getElementById("databaseStatus").innerText = data.database.status;
 
+            // Update totalRequestsToday
+            totalRequestsToday = data.totalRequests;
+
             // Tambahkan data ke array untuk grafik
             const now = new Date().toLocaleTimeString();
             timestamps.push(now);
-            totalRequestsData.push(data.totalRequests);
+            totalRequestsData.push(totalRequestsToday);
             cpuLoadData.push(data.server.cpuLoad["1m"]);
 
             // Batasi data hanya 10 terakhir
