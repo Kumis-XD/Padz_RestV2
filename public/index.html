@@ -1,162 +1,141 @@
 <!doctype html>
 <html lang="id">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📌 Selamat Datang di API</title>
+    <title>📌 API Status & Informasi</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-		<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
     <style>
-      body {
-        background-color: #3c3f41;
-        color: #d7dadc;
-        font-family: 'Press Start 2P', cursive;
-      }
+        body {
+            background-color: #3c3f41;
+            color: #d7dadc;
+            font-family: 'Press Start 2P', cursive;
+        }
 
-      header {
-        background-color: #4a7c56;
-        padding: 4rem 0;
-        color: #fff;
-        border-bottom: 2px solid #5a9c6e;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
+        header {
+            background-color: #4a7c56;
+            padding: 4rem 0;
+            color: #fff;
+            border-bottom: 2px solid #5a9c6e;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-      header h1 {
-        font-size: 3rem;
-        font-weight: 700;
-      }
+        .info-box {
+            background-color: #282a2e;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-      header p {
-        font-size: 1.25rem;
-        font-weight: 400;
-      }
+        .loading {
+            color: #aaa;
+            font-style: italic;
+        }
 
-      .btn-primary {
-        background-color: #5a9c6e;
-        border-color: #4a7c56;
-        padding: 12px 24px;
-        font-size: 1.1rem;
-        border-radius: 0.25rem;
-        transition: all 0.3s ease;
-      }
-
-      .btn-primary:hover {
-        background-color: #4a7c56;
-        border-color: #3a5c46;
-        transform: scale(1.05);
-      }
-
-      #about h2, #status h2 {
-        font-size: 2.5rem;
-        font-weight: 500;
-        margin-bottom: 1.5rem;
-      }
-
-      #about p, #status p {
-        font-size: 1.25rem;
-        max-width: 800px;
-        margin: 0 auto;
-        line-height: 1.6;
-        color: #ddd;
-      }
-
-      .info-box {
-        background-color: #282a2e;
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin-top: 1rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
-
-      footer {
-        background-color: #4a7c56;
-        padding: 1rem 0;
-        color: #d7dadc;
-        border-top: 2px solid #5a9c6e;
-        font-size: 1rem;
-      }
-
-      footer p {
-        margin-bottom: 0;
-      }
+        footer {
+            background-color: #4a7c56;
+            padding: 1rem 0;
+            color: #d7dadc;
+            border-top: 2px solid #5a9c6e;
+            font-size: 1rem;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
 
     <!-- Header Section -->
     <header class="text-center">
-      <h1>Selamat Datang di API 📌</h1>
-      <p class="lead mt-3">API untuk mengakses berbagai layanan Download, Search, Maker, dll.</p>
-      <div class="mt-4">
-        <a href="/docs" class="btn btn-primary btn-lg">
-          Lihat Dokumentasi API
-        </a>
-      </div>
+        <h1>📌 Status & Informasi API</h1>
+        <p class="lead mt-3">Monitor performa server & status API secara real-time</p>
     </header>
 
-    <!-- Deskripsi API -->
-    <section id="about" class="container py-5 text-center">
-      <h2>Apa itu API ini?</h2>
-      <p class="lead">
-        API ini menyediakan berbagai layanan untuk mengunduh data, melakukan pencarian, dan membuat konten melalui berbagai endpoint. Anda bisa mengakses dokumentasi ini untuk mengetahui lebih banyak tentang setiap kategori endpoint yang tersedia.
-      </p>
-    </section>
-
-    <!-- Status Server -->
+    <!-- Status API -->
     <section id="status" class="container py-5 text-center">
-      <h2>Status & Informasi API</h2>
-      <div class="info-box">
-        <h5>📌 Informasi API</h5>
-        <p><b>Nama:</b> <span id="api-name">Memuat...</span></p>
-        <p><b>Versi:</b> <span id="api-version">Memuat...</span></p>
-        <p><b>Uptime:</b> <span id="api-uptime">Memuat...</span></p>
-        <p><b>Total Endpoint:</b> <span id="api-endpoints">Memuat...</span></p>
-      </div>
+        <h2>📌 Informasi API</h2>
+        <div class="info-box">
+            <p><b>Nama API:</b> <span id="api-name" class="loading">Memuat...</span></p>
+            <p><b>Versi:</b> <span id="api-version" class="loading">Memuat...</span></p>
+            <p><b>Uptime:</b> <span id="api-uptime" class="loading">Memuat...</span></p>
+            <p><b>Total Endpoint:</b> <span id="api-endpoints" class="loading">Memuat...</span></p>
+            <p><b>Hostname:</b> <span id="server-hostname" class="loading">Memuat...</span></p>
+            <p><b>Port:</b> <span id="server-port" class="loading">Memuat...</span></p>
+            <p><b>Waktu Server:</b> <span id="server-time" class="loading">Memuat...</span></p>
+        </div>
 
-      <div class="info-box">
-        <h5>📊 Status Server</h5>
-        <p><b>CPU Load:</b> <span id="cpu-load">Memuat...</span></p>
-        <p><b>Total RAM:</b> <span id="total-ram">Memuat...</span></p>
-        <p><b>RAM Tersisa:</b> <span id="free-ram">Memuat...</span></p>
-      </div>
+        <h2 class="mt-5">📊 Status Server</h2>
+        <div class="info-box">
+            <p><b>CPU Load:</b> 
+                <span id="cpu-load-1m" class="loading">Memuat...</span> (1 min) | 
+                <span id="cpu-load-5m" class="loading">Memuat...</span> (5 min) | 
+                <span id="cpu-load-15m" class="loading">Memuat...</span> (15 min)
+            </p>
+            <p><b>Total RAM:</b> <span id="total-ram" class="loading">Memuat...</span></p>
+            <p><b>RAM Tersisa:</b> <span id="free-ram" class="loading">Memuat...</span></p>
+            <p><b>Disk Usage:</b> <span id="disk-usage" class="loading">Memuat...</span></p>
+        </div>
+
+        <h2 class="mt-5">📡 Statistik API</h2>
+        <div class="info-box">
+            <p><b>Jumlah Request:</b> <span id="total-requests" class="loading">Memuat...</span></p>
+            <p><b>Request per Detik:</b> <span id="req-per-sec" class="loading">Memuat...</span></p>
+            <p><b>Status Database:</b> <span id="db-status" class="loading">Memuat...</span></p>
+        </div>
     </section>
 
-    <!-- Footer Section -->
+    <!-- Footer -->
     <footer class="text-center">
-      <p>&copy; 2025 API Documentation. Semua Hak Dilindungi.</p>
+        <p>&copy; 2025 API Documentation. Semua Hak Dilindungi.</p>
     </footer>
 
-    <!-- Bootstrap JS & Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
     <!-- Fetch API Info & Status -->
     <script>
-      async function fetchAPIInfo() {
-        try {
-          const infoRes = await fetch("/api/info");
-          const statusRes = await fetch("/api/status");
+        async function fetchAPIInfo() {
+            try {
+                const [infoRes, statusRes] = await Promise.all([
+                    fetch("/api/info"),
+                    fetch("/api/status")
+                ]);
 
-          const infoData = await infoRes.json();
-          const statusData = await statusRes.json();
+                const infoData = await infoRes.json();
+                const statusData = await statusRes.json();
 
-          document.getElementById("api-name").textContent = infoData.server.name;
-          document.getElementById("api-version").textContent = infoData.server.version;
-          document.getElementById("api-uptime").textContent = infoData.server.uptime;
-          document.getElementById("api-endpoints").textContent = infoData.server.totalEndpoints;
+                // API Info
+                document.getElementById("api-name").textContent = infoData.server.name;
+                document.getElementById("api-version").textContent = infoData.server.version;
+                document.getElementById("api-uptime").textContent = infoData.server.uptime;
+                document.getElementById("api-endpoints").textContent = infoData.server.totalEndpoints;
+                document.getElementById("server-hostname").textContent = infoData.server.hostname;
+                document.getElementById("server-port").textContent = infoData.server.port;
+                document.getElementById("server-time").textContent = new Date(infoData.server.time).toLocaleString();
 
-          document.getElementById("cpu-load").textContent = statusData.server.cpuLoad["1m"] + " (1 min)";
-          document.getElementById("total-ram").textContent = statusData.server.totalMemory;
-          document.getElementById("free-ram").textContent = statusData.server.freeMemory;
-        } catch (error) {
-          console.error("Gagal mengambil data API:", error);
+                // Server Status
+                document.getElementById("cpu-load-1m").textContent = statusData.server.cpuLoad["1m"];
+                document.getElementById("cpu-load-5m").textContent = statusData.server.cpuLoad["5m"];
+                document.getElementById("cpu-load-15m").textContent = statusData.server.cpuLoad["15m"];
+                document.getElementById("total-ram").textContent = statusData.server.totalMemory;
+                document.getElementById("free-ram").textContent = statusData.server.freeMemory;
+                document.getElementById("disk-usage").textContent = statusData.server.diskUsage;
+
+                // API Statistics
+                document.getElementById("total-requests").textContent = statusData.api.totalRequests;
+                document.getElementById("req-per-sec").textContent = statusData.api.requestsPerSecond;
+                document.getElementById("db-status").textContent = statusData.database.status;
+
+            } catch (error) {
+                console.error("Gagal mengambil data API:", error);
+            }
         }
-      }
 
-      // Jalankan fungsi saat halaman dimuat
-      fetchAPIInfo();
+        // Update setiap 10 detik
+        fetchAPIInfo();
+        setInterval(fetchAPIInfo, 10000);
     </script>
 
-  </body>
+</body>
 </html>
