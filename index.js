@@ -26,6 +26,9 @@ let endpointStats = {
 	Tools: {},
 };
 
+// Variabel untuk total request global
+let totalRequests = 0;
+
 // Fungsi untuk memuat semua endpoint dari folder
 const loadRoutes = (category) => {
 	const categoryPath = path.join(basePath, category);
@@ -46,6 +49,9 @@ const loadRoutes = (category) => {
 								endpointStats[category][routeName] = 0;
 							}
 							endpointStats[category][routeName]++;
+							
+							// Menambah total request global
+							totalRequests++;
 
 							try {
 								// Validasi parameter berdasarkan kategori
@@ -221,13 +227,17 @@ app.use(trackRequests);
 
 // Endpoint Statistik API
 app.get("/api/status", (req, res) => {
-  res.json(getServerStatus());
+  res.json({
+    ...getServerStatus(),
+    totalRequests, // Menambahkan jumlah request total global
+  });
 });
 
 // Endpoint Informasi API
 app.get("/api/info", (req, res) => {
   res.json({
     server: getServerStatus().server,
+    totalRequests, // Menambahkan jumlah request total global
   });
 });
 
@@ -235,6 +245,7 @@ app.get("/api/info", (req, res) => {
 setTimeout(() => {
   setDatabaseStatus("Connected");
 }, 5000); // Simulasi koneksi database setelah 5 detik
+
 // Endpoint untuk halaman dokumentasi API
 app.get("/docs", (req, res) => {
 	res.sendFile(docsPath);
@@ -244,3 +255,15 @@ app.get("/docs", (req, res) => {
 app.listen(port, () => {
 	console.log(`Server berjalan di http://localhost:${port}`);
 });
+
+// Reset statistik setiap 24 jam (opsional)
+setInterval(() => {
+	endpointStats = {
+		Download: {},
+		Maker: {},
+		Search: {},
+		Information: {},
+		Tools: {},
+	};
+	totalRequests = 0;
+}, 24 * 60 * 60 * 1000); // Reset setiap 24 jam
