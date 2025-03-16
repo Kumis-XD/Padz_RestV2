@@ -46,18 +46,26 @@
         transform: scale(1.05);
       }
 
-      #about h2 {
+      #about h2, #status h2 {
         font-size: 2.5rem;
         font-weight: 500;
         margin-bottom: 1.5rem;
       }
 
-      #about p {
+      #about p, #status p {
         font-size: 1.25rem;
         max-width: 800px;
         margin: 0 auto;
         line-height: 1.6;
         color: #ddd;
+      }
+
+      .info-box {
+        background-color: #282a2e;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
 
       footer {
@@ -95,6 +103,25 @@
       </p>
     </section>
 
+    <!-- Status Server -->
+    <section id="status" class="container py-5 text-center">
+      <h2>Status & Informasi API</h2>
+      <div class="info-box">
+        <h5>📌 Informasi API</h5>
+        <p><b>Nama:</b> <span id="api-name">Memuat...</span></p>
+        <p><b>Versi:</b> <span id="api-version">Memuat...</span></p>
+        <p><b>Uptime:</b> <span id="api-uptime">Memuat...</span></p>
+        <p><b>Total Endpoint:</b> <span id="api-endpoints">Memuat...</span></p>
+      </div>
+
+      <div class="info-box">
+        <h5>📊 Status Server</h5>
+        <p><b>CPU Load:</b> <span id="cpu-load">Memuat...</span></p>
+        <p><b>Total RAM:</b> <span id="total-ram">Memuat...</span></p>
+        <p><b>RAM Tersisa:</b> <span id="free-ram">Memuat...</span></p>
+      </div>
+    </section>
+
     <!-- Footer Section -->
     <footer class="text-center">
       <p>&copy; 2025 API Documentation. Semua Hak Dilindungi.</p>
@@ -103,5 +130,33 @@
     <!-- Bootstrap JS & Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <!-- Fetch API Info & Status -->
+    <script>
+      async function fetchAPIInfo() {
+        try {
+          const infoRes = await fetch("/api/info");
+          const statusRes = await fetch("/api/status");
+
+          const infoData = await infoRes.json();
+          const statusData = await statusRes.json();
+
+          document.getElementById("api-name").textContent = infoData.server.name;
+          document.getElementById("api-version").textContent = infoData.server.version;
+          document.getElementById("api-uptime").textContent = infoData.server.uptime;
+          document.getElementById("api-endpoints").textContent = infoData.server.totalEndpoints;
+
+          document.getElementById("cpu-load").textContent = statusData.server.cpuLoad["1m"] + " (1 min)";
+          document.getElementById("total-ram").textContent = statusData.server.totalMemory;
+          document.getElementById("free-ram").textContent = statusData.server.freeMemory;
+        } catch (error) {
+          console.error("Gagal mengambil data API:", error);
+        }
+      }
+
+      // Jalankan fungsi saat halaman dimuat
+      fetchAPIInfo();
+    </script>
+
   </body>
 </html>
