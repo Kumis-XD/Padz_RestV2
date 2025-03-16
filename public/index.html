@@ -3,94 +3,98 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>📌 Selamat Datang di API</title>
-    
-    <!-- Tailwind CSS -->
+    <title>📌 API Documentation</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet" />
-
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
     <style>
       body {
-        background-color: #3c3f41;
+        background-color: #282c34;
         color: #d7dadc;
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
+      }
+      .card {
+        background-color: #3c3f41;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      .btn {
+        background-color: #5a9c6e;
+        padding: 10px 16px;
+        border-radius: 4px;
+        transition: 0.3s;
+      }
+      .btn:hover {
+        background-color: #4a7c56;
+        transform: scale(1.05);
       }
     </style>
   </head>
 
-  <body class="min-h-screen flex flex-col justify-between">
-
-    <!-- Header Section -->
-    <header class="bg-green-700 text-white text-center py-16 shadow-lg border-b-4 border-green-600">
-      <h1 class="text-4xl font-bold">Selamat Datang di API 📌</h1>
-      <p class="text-lg mt-4">API untuk mengakses berbagai layanan Download, Search, Maker, dll.</p>
-      <div class="mt-6">
-        <a href="/docs" class="bg-green-500 text-white px-6 py-3 rounded-md text-lg shadow-md hover:bg-green-600 transition">
-          Lihat Dokumentasi API
-        </a>
+  <body class="flex flex-col items-center min-h-screen py-10">
+    <!-- Header -->
+    <header class="text-center">
+      <h1 class="text-4xl font-bold">📌 API Documentation</h1>
+      <p class="text-lg mt-3">API untuk mengakses layanan Download, Search, Maker, dll.</p>
+      <div class="mt-4">
+        <a href="/docs" class="btn">📜 Lihat Dokumentasi</a>
       </div>
     </header>
 
     <!-- Deskripsi API -->
-    <section id="about" class="container mx-auto px-6 py-12 text-center">
-      <h2 class="text-3xl font-semibold">Apa itu API ini?</h2>
-      <p class="text-lg text-gray-300 max-w-3xl mx-auto mt-4 leading-relaxed">
-        API ini menyediakan berbagai layanan untuk mengunduh data, melakukan pencarian, dan membuat konten melalui berbagai endpoint. Anda bisa mengakses dokumentasi ini untuk mengetahui lebih banyak tentang setiap kategori endpoint yang tersedia.
-      </p>
-    </section>
-
-    <!-- Status Server -->
-    <section id="status" class="container mx-auto px-6 py-12 text-center">
-      <h2 class="text-3xl font-semibold">Status & Informasi API</h2>
-
-      <div class="bg-gray-800 p-6 rounded-lg shadow-md mt-6">
-        <h5 class="text-lg text-green-400">📌 Informasi API</h5>
-        <p><b>Nama:</b> <span id="api-name" class="text-gray-300">Memuat...</span></p>
-        <p><b>Versi:</b> <span id="api-version" class="text-gray-300">Memuat...</span></p>
-        <p><b>Uptime:</b> <span id="api-uptime" class="text-gray-300">Memuat...</span></p>
-        <p><b>Total Endpoint:</b> <span id="api-endpoints" class="text-gray-300">Memuat...</span></p>
-      </div>
-
-      <div class="bg-gray-800 p-6 rounded-lg shadow-md mt-6">
-        <h5 class="text-lg text-green-400">📊 Status Server</h5>
-        <p><b>CPU Load:</b> <span id="cpu-load" class="text-gray-300">Memuat...</span></p>
-        <p><b>Total RAM:</b> <span id="total-ram" class="text-gray-300">Memuat...</span></p>
-        <p><b>RAM Tersisa:</b> <span id="free-ram" class="text-gray-300">Memuat...</span></p>
+    <section id="about" class="container mt-8 max-w-3xl mx-auto text-center">
+      <div class="card">
+        <h2 class="text-2xl font-semibold">🔹 Apa itu API ini?</h2>
+        <p class="mt-2">API ini menyediakan layanan untuk mengunduh data, melakukan pencarian, dan membuat konten melalui berbagai endpoint.</p>
       </div>
     </section>
 
-    <!-- Footer Section -->
-    <footer class="bg-green-700 text-white text-center py-4 border-t-4 border-green-600">
-      <p>&copy; 2025 API Documentation. Semua Hak Dilindungi.</p>
+    <!-- Status API -->
+    <section id="status" class="container mt-8 max-w-3xl mx-auto">
+      <div class="card">
+        <h2 class="text-2xl font-semibold">📊 Status API</h2>
+        <p class="mt-2">Informasi real-time tentang performa API.</p>
+
+        <div class="mt-4 space-y-2">
+          <p><strong>Total Requests:</strong> <span id="totalRequests">-</span></p>
+          <p><strong>Requests per Second:</strong> <span id="requestsPerSecond">-</span></p>
+          <p><strong>Uptime:</strong> <span id="uptime">-</span></p>
+          <p><strong>CPU Load:</strong> <span id="cpuLoad">-</span></p>
+          <p><strong>Total Memory:</strong> <span id="totalMemory">-</span></p>
+          <p><strong>Free Memory:</strong> <span id="freeMemory">-</span></p>
+          <p><strong>Database Status:</strong> <span id="databaseStatus">-</span></p>
+        </div>
+
+        <button onclick="fetchAPIStatus()" class="btn mt-4">🔄 Refresh</button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center mt-8">
+      <p class="text-sm">&copy; 2025 API Monitoring. Semua Hak Dilindungi.</p>
     </footer>
 
-    <!-- Fetch API Info & Status -->
+    <!-- Fetch API Status -->
     <script>
-      async function fetchAPIInfo() {
+      async function fetchAPIStatus() {
         try {
-          const infoRes = await fetch("/api/info");
-          const statusRes = await fetch("/api/status");
+          const response = await fetch('/api/status');
+          const data = await response.json();
 
-          const infoData = await infoRes.json();
-          const statusData = await statusRes.json();
-
-          document.getElementById("api-name").textContent = infoData.server.name;
-          document.getElementById("api-version").textContent = infoData.server.version;
-          document.getElementById("api-uptime").textContent = infoData.server.uptime;
-          document.getElementById("api-endpoints").textContent = infoData.server.totalEndpoints;
-
-          document.getElementById("cpu-load").textContent = statusData.server.cpuLoad["1m"] + " (1 min)";
-          document.getElementById("total-ram").textContent = statusData.server.totalMemory;
-          document.getElementById("free-ram").textContent = statusData.server.freeMemory;
+          document.getElementById("totalRequests").innerText = data.totalRequests;
+          document.getElementById("requestsPerSecond").innerText = data.requestsPerSecond;
+          document.getElementById("uptime").innerText = data.server.uptime;
+          document.getElementById("cpuLoad").innerText = `${data.server.cpuLoad["1m"]} (1m), ${data.server.cpuLoad["5m"]} (5m), ${data.server.cpuLoad["15m"]} (15m)`;
+          document.getElementById("totalMemory").innerText = data.server.totalMemory;
+          document.getElementById("freeMemory").innerText = data.server.freeMemory;
+          document.getElementById("databaseStatus").innerText = data.database.status;
         } catch (error) {
-          console.error("Gagal mengambil data API:", error);
+          console.error("Gagal mengambil data:", error);
         }
       }
 
-      fetchAPIInfo();
+      // Jalankan saat halaman dimuat
+      fetchAPIStatus();
     </script>
-
   </body>
 </html>
