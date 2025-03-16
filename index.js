@@ -35,10 +35,7 @@ let totalRequests = 0;
 const limiter = rateLimit({
 	windowMs: 1 * 60 * 1000, // 1 menit
 	max: 100, // Maksimum 100 request per menit per IP
-	message: "Terlalu banyak permintaan dari IP ini. Silakan coba lagi nanti.",
-	onLimitReached: (req, res) => {
-		// This callback is now deprecated, and it can be removed.
-	},
+	message: "Terlalu banyak permintaan dari IP ini. Silakan coba lagi nanti."
 });
 
 // Apply rate limiting ke semua request
