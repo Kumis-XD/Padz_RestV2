@@ -1,221 +1,305 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>📌 API Dashboard</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+			rel="stylesheet" />
+		<link href="thumbnail/IMG-20250315-WA0083.jpg" rel="icon" />
+		<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+		<style>
+			* {
+				font-family: "IBM Plex Mono";
+			}
+			body {
+				background-color: #282c34;
+				color: #d7dadc;
+			}
+			.card {
+				background-color: #3c3f41;
+				padding: 20px;
+				border-radius: 8px;
+				box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+			}
+			.btn {
+				background-color: #5a9c6e;
+				padding: 10px 16px;
+				border-radius: 4px;
+				transition: 0.3s;
+			}
+			.btn:hover {
+				background-color: #4a7c56;
+				transform: scale(1.05);
+			}
+			footer {
+				background-color: #4a7c56;
+				color: #d7dadc;
+				padding: 20px;
+				text-align: center;
+				border-top: 2px solid #5a9c6e;
+				font-size: 14px;
+			}
+			footer a {
+				color: #5a9c6e;
+				text-decoration: none;
+			}
+			footer a:hover {
+				color: #d7dadc;
+			}
+		</style>
+	</head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📌 API Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="thumbnail/IMG-20250315-WA0083.jpg" rel="icon">
-	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link
-		href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap"
-		rel="stylesheet">
-  <style>
-    * {
-      font-family: "IBM Plex Mono";
-    }
-    body {
-      background-color: #282c34;
-      color: #d7dadc;
-    }
+	<body class="flex flex-col items-center min-h-screen py-10">
+		<header class="text-center mt-5 mb-5">
+			<h1 class="text-4xl font-bold">📌 API Documentation</h1>
+			<p class="text-lg mt-3">
+				API untuk mengakses layanan Download, Search, Maker, dll.
+			</p>
+			<div class="mt-4">
+				<a href="/docs" class="btn">📜 Lihat Dokumentasi</a>
+			</div>
+		</header>
 
-    .card {
-      background-color: #3c3f41;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    }
+		<section id="status" class="container mt-8 max-w-3xl mx-auto">
+			<div class="card">
+				<h2 class="text-2xl font-semibold">📊 Status API</h2>
+				<div class="mt-4 space-y-2">
+					<p>
+						<strong>Total Requests:</strong>
+						<span id="totalRequests">-</span>
+					</p>
+					<p>
+						<strong>Requests per Second:</strong>
+						<span id="requestsPerSecond">-</span>
+					</p>
+					<p><strong>Uptime:</strong> <span id="uptime">-</span></p>
+					<p>
+						<strong>CPU Load:</strong> <span id="cpuLoad">-</span>
+					</p>
+					<p>
+						<strong>Total Memory:</strong>
+						<span id="totalMemory">-</span>
+					</p>
+					<p>
+						<strong>Free Memory:</strong>
+						<span id="freeMemory">-</span>
+					</p>
+					<p>
+						<strong>Database Status:</strong>
+						<span id="databaseStatus">-</span>
+					</p>
+					<p>
+						<strong>Kecepatan Server:</strong>
+						<span id="serverSpeedText">-</span>
+					</p>
+				</div>
 
-    .btn {
-      background-color: #5a9c6e;
-      padding: 10px 16px;
-      border-radius: 4px;
-      transition: 0.3s;
-    }
+				<button onclick="fetchAPIStatus()" class="btn mt-4">
+					🔄 Refresh
+				</button>
+			</div>
+		</section>
 
-    .btn:hover {
-      background-color: #4a7c56;
-      transform: scale(1.05);
-    }
-  </style>
-</head>
+		<section class="container mt-8 max-w-4xl mx-auto">
+			<div class="card">
+				<h2 class="text-2xl font-semibold">📈 Grafik Statistik</h2>
+				<div id="requestsChart" class="mt-4"></div>
+				<div id="cpuChart" class="mt-4"></div>
+				<div id="serverSpeed" class="mt-4"></div>
+			</div>
+		</section>
 
-<body class="flex flex-col items-center min-h-screen py-10">
-  <!-- Header -->
-  <header class="text-center">
-    <h1 class="text-4xl font-bold">📌 API Documentation</h1>
-    <p class="text-lg mt-3">API untuk mengakses layanan Download, Search, Maker, dll.</p>
-    <div class="mt-4">
-      <a href="/docs" class="btn">📜 Lihat Dokumentasi</a>
-    </div>
-  </header>
+		<footer>
+			<p>
+				&copy; 2025 API Documentation. All Rights Reserved. <br />
+				<a href="https://github.com/Kumis-XD" target="_blank"
+					>GitHub Repository</a
+				>
+			</p>
+		</footer>
 
-  <!-- Status API -->
-  <section id="status" class="container mt-8 max-w-3xl mx-auto">
-    <div class="card">
-      <h2 class="text-2xl font-semibold">📊 Status API</h2>
-      <p class="mt-2">Data real-time tentang performa API.</p>
+		<script>
+			let timestamps = [];
+			let totalRequestsData = [];
+			let cpuLoadData = [];
 
-      <div class="mt-4 space-y-2">
-        <p><strong>Total Requests:</strong> <span id="totalRequests">-</span></p>
-        <p><strong>Requests per Second:</strong> <span id="requestsPerSecond">-</span></p>
-        <p><strong>Uptime:</strong> <span id="uptime">-</span></p>
-        <p><strong>CPU Load:</strong> <span id="cpuLoad">-</span></p>
-        <p><strong>Total Memory:</strong> <span id="totalMemory">-</span></p>
-        <p><strong>Free Memory:</strong> <span id="freeMemory">-</span></p>
-        <p><strong>Database Status:</strong> <span id="databaseStatus">-</span></p>
-      </div>
+			const requestsChartOptions = {
+				chart: {
+					type: "area",
+					height: 300,
+					background: "#3c3f41",
+					stacked: false,
+					fontFamily: "IBM Plex Mono",
+					zoom: {
+						enabled: false,
+					},
+					animations: {
+						enabled: true,
+						speed: 800,
+						animateGradually: {
+							enabled: true,
+							delay: 150,
+						},
+						dynamicAnimation: {
+							enabled: true,
+							speed: 350,
+						},
+					},
+					toolbar: {
+						show: false,
+					},
+				},
+				grid: {
+					show: false,
+				},
+				title: {
+					text: "Total Request",
+					align: "center",
+					margin: 10,
+					offsetX: 0,
+					offsetY: 0,
+					floating: true,
+					style: {
+						fontSize: "20px",
+						fontWeight: "bold",
+						fontFamily: "IBM Plex Mono",
+						color: "#ffffff",
+					},
+				},
+				dataLabels: {
+					enabled: false,
+				},
+				series: [{ name: "Total Requests", data: [] }],
+				xaxis: { categories: [] },
+				colors: ["#5a9c6e"],
+				stroke: { curve: "smooth" },
+				theme: { mode: "dark" },
+			};
 
-      <button onclick="fetchAPIStatus()" class="btn mt-4">🔄 Refresh</button>
-    </div>
-  </section>
+			const cpuChartOptions = {
+				chart: {
+					type: "area",
+					height: 300,
+					background: "#3c3f41",
+					stacked: false,
+					fontFamily: "IBM Plex Mono",
+					zoom: {
+						enabled: false,
+					},
+					animations: {
+						enabled: true,
+						speed: 800,
+						animateGradually: {
+							enabled: true,
+							delay: 150,
+						},
+						dynamicAnimation: {
+							enabled: true,
+							speed: 350,
+						},
+					},
+					toolbar: {
+						show: false,
+					},
+				},
+				grid: {
+					show: false,
+				},
+				title: {
+					text: "CPU Load",
+					align: "center",
+					margin: 10,
+					offsetX: 0,
+					offsetY: 0,
+					floating: true,
+					style: {
+						fontSize: "20px",
+						fontWeight: "bold",
+						fontFamily: "IBM Plex Mono",
+						color: "#ffffff",
+					},
+				},
+				dataLabels: {
+					enabled: false,
+				},
+				series: [{ name: "CPU Load (1m)", data: [] }],
+				xaxis: { categories: [] },
+				colors: ["#ffb74d"],
+				stroke: { curve: "smooth" },
+				theme: { mode: "dark" },
+			};
 
-  <!-- Grafik Statistik API -->
-  <section class="container mt-8 max-w-4xl mx-auto">
-    <div class="card">
-      <h2 class="text-2xl font-semibold">📈 Grafik Statistik</h2>
-      <canvas id="requestsChart" class="mt-4"></canvas>
-      <canvas id="cpuChart" class="mt-4"></canvas>
-    </div>
-  </section>
+			const requestsChart = new ApexCharts(
+				document.querySelector("#requestsChart"),
+				requestsChartOptions,
+			);
+			const cpuChart = new ApexCharts(
+				document.querySelector("#cpuChart"),
+				cpuChartOptions,
+			);
+			requestsChart.render();
+			cpuChart.render();
 
-  <!-- Footer -->
-  <footer class="text-center mt-8">
-    <p class="text-sm">&copy; 2025 API Monitoring. Semua Hak Dilindungi.</p>
-  </footer>
+			function fetchAPIStatus() {
+				fetch("/api/status")
+					.then((res) => res.json())
+					.then((data) => {
+						const now = new Date().toLocaleTimeString();
 
-  <!-- JavaScript untuk Fetch Data API dan Chart.js -->
-  <script>
-    let requestsChart, cpuChart;
-    let timestamps = [];
-    let totalRequestsData = [];
-    let cpuLoadData = [];
-    let lastUpdateTime = Date.now();  // Menyimpan waktu pembaruan terakhir
-    let totalRequestsToday = 0;       // Total requests hari ini
+						document.getElementById("totalRequests").innerText =
+							data.totalRequests;
+						document.getElementById("requestsPerSecond").innerText =
+							data.requestsPerSecond;
+						document.getElementById("uptime").innerText =
+							data.server.uptime;
+						document.getElementById(
+							"cpuLoad",
+						).innerText = `${data.server.cpuLoad["1m"]} (1m), ${data.server.cpuLoad["5m"]} (5m), ${data.server.cpuLoad["15m"]} (15m)`;
+						document.getElementById("totalMemory").innerText =
+							data.server.totalMemory;
+						document.getElementById("freeMemory").innerText =
+							data.server.freeMemory;
+						document.getElementById("databaseStatus").innerText =
+							data.database.status;
+						document.getElementById("serverSpeedText").innerText =
+							data.server.speed + " Mbps"; // Menampilkan kecepatan server
 
-    function fetchAPIStatus() {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", "/api/status", true);
+						timestamps.push(now);
+						totalRequestsData.push(data.totalRequests);
+						cpuLoadData.push(data.server.cpuLoad["1m"]);
 
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          const data = JSON.parse(xhr.responseText);
+						if (timestamps.length > 10) {
+							timestamps.shift();
+							totalRequestsData.shift();
+							cpuLoadData.shift();
+						}
 
-          // Cek apakah sudah 24 jam sejak pembaruan terakhir
-          const currentTime = Date.now();
-          const elapsedTime = currentTime - lastUpdateTime;
+						requestsChart.updateSeries([
+							{ data: totalRequestsData },
+						]);
+						requestsChart.updateOptions({
+							xaxis: { categories: timestamps },
+						});
 
-          // Jika lebih dari 24 jam, reset total requests
-          if (elapsedTime >= 86400000) {  // 86400000 ms = 24 jam
-            totalRequestsToday = 0;  // Reset total requests
-            lastUpdateTime = currentTime;  // Pembaruan waktu terakhir
-          }
+						cpuChart.updateSeries([{ data: cpuLoadData }]);
+						cpuChart.updateOptions({
+							xaxis: { categories: timestamps },
+						});
+					})
+					.catch((error) =>
+						console.error("Error fetching API status:", error),
+					);
+			}
 
-          // Perbarui data teks
-          document.getElementById("totalRequests").innerText = totalRequestsToday;
-          document.getElementById("requestsPerSecond").innerText = data.requestsPerSecond;
-          document.getElementById("uptime").innerText = data.server.uptime;
-          document.getElementById("cpuLoad").innerText = `${data.server.cpuLoad["1m"]} (1m), ${data.server.cpuLoad["5m"]} (5m), ${data.server.cpuLoad["15m"]} (15m)`;
-          document.getElementById("totalMemory").innerText = data.server.totalMemory;
-          document.getElementById("freeMemory").innerText = data.server.freeMemory;
-          document.getElementById("databaseStatus").innerText = data.database.status;
+			// Fetch initial data and set interval for updates
+			fetchAPIStatus();
+			setInterval(fetchAPIStatus, 1000);
+		</script>
 
-          // Update totalRequestsToday
-          totalRequestsToday = data.totalRequests;
-
-          // Tambahkan data ke array untuk grafik
-          const now = new Date().toLocaleTimeString();
-          timestamps.push(now);
-          totalRequestsData.push(totalRequestsToday);
-          cpuLoadData.push(data.server.cpuLoad["1m"]);
-
-          // Batasi data hanya 10 terakhir
-          if (timestamps.length > 10) {
-            timestamps.shift();
-            totalRequestsData.shift();
-            cpuLoadData.shift();
-          }
-
-          updateCharts();
-        } else {
-          console.error("Gagal mengambil data:", xhr.statusText);
-        }
-      };
-
-      xhr.onerror = function () {
-        console.error("Request gagal");
-      };
-
-      xhr.send();
-    }
-
-    function createCharts() {
-      const ctx1 = document.getElementById("requestsChart").getContext("2d");
-      const ctx2 = document.getElementById("cpuChart").getContext("2d");
-
-      requestsChart = new Chart(ctx1, {
-        type: "line",
-        data: {
-          labels: timestamps,
-          datasets: [
-            {
-              label: "Total Requests",
-              data: totalRequestsData,
-              borderColor: "#5a9c6e",
-              backgroundColor: "rgba(90, 156, 110, 0.2)",
-              fill: true,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: { x: { beginAtZero: true }, y: { beginAtZero: true } },
-        },
-      });
-
-      cpuChart = new Chart(ctx2, {
-        type: "line",
-        data: {
-          labels: timestamps,
-          datasets: [
-            {
-              label: "CPU Load (1m)",
-              data: cpuLoadData,
-              borderColor: "#ffb74d",
-              backgroundColor: "rgba(255, 183, 77, 0.2)",
-              fill: true,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: { x: { beginAtZero: true }, y: { beginAtZero: true } },
-        },
-      });
-    }
-
-    function updateCharts() {
-      requestsChart.data.labels = timestamps;
-      requestsChart.data.datasets[0].data = totalRequestsData;
-      requestsChart.update();
-
-      cpuChart.data.labels = timestamps;
-      cpuChart.data.datasets[0].data = cpuLoadData;
-      cpuChart.update();
-    }
-
-    // Inisialisasi grafik dan mulai polling API setiap 5 detik
-    createCharts();
-    fetchAPIStatus();
-    setInterval(fetchAPIStatus, 3000);  // Polling data setiap 5 detik
-  </script>
-  <script nonce="{{nonce}}"
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-
+		<script
+			nonce="{{nonce}}"
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
 </html>

@@ -8,7 +8,7 @@ const { trackRequests, getServerStatus, setDatabaseStatus } = require("./stats")
 const crypto = require('crypto');
 
 const app = express();
-const port = 4000;
+const port = 3000;
 
 // Middleware untuk JSON & menyajikan file statis
 app.use(express.json());
@@ -35,7 +35,7 @@ let totalRequests = 0;
 // Rate Limiting untuk melindungi server dari DDoS dan spam request
 const limiter = rateLimit({
 	windowMs: 1 * 60 * 1000, // 1 menit
-	max: 100, // Maksimum 100 request per menit per IP
+	limit: 100, // Maksimum 100 request per menit per IP
 	message: "Terlalu banyak permintaan dari IP ini. Silakan coba lagi nanti."
 });
 
@@ -257,14 +257,7 @@ app.use(trackRequests);
 app.get("/api/status", (req, res) => {
   res.json({
     ...getServerStatus(),
-    totalRequests, // Menambahkan jumlah request total global
-  });
-});
-
-// Endpoint Informasi API
-app.get("/api/info", (req, res) => {
-  res.json({
-    server: getServerStatus().server,
+    speed: getServerStatus().speed,
     totalRequests, // Menambahkan jumlah request total global
   });
 });
